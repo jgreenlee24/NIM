@@ -8,6 +8,8 @@ std::string genConfig();
 void outputConfig(std::string config);
 bool checkForWinner(std::string config);
 bool showWinner(int turn, std::string& config);
+bool checkForValidMove(std::string playerMove);
+bool isInvalidMove(std::string playerMove, std::string config);
 
 void main() {
 	std::cout << "WELCOME TO NIM\n";
@@ -18,10 +20,16 @@ void main() {
 	bool winner = false;
 	while (nim) {
 		outputConfig(config);
-		// player turn
+		// player turn - you'll want to add code for comments / forfeit
 		std::string playerMove;
 		std::cout << "Move? ";
 		std::cin >> playerMove;
+		while (isInvalidMove(playerMove, config)) {
+			std::cout << "Invalid Move." << std::endl;
+			std::cout << "Move? ";
+			std::cin >> playerMove;
+		}
+		
 		applyMoveToConfig(config, playerMove);
 		if (checkForWinner(config)) {
 			nim = showWinner(0, config);
@@ -103,4 +111,27 @@ bool showWinner(int turn, std::string& config) {
 		std::cout << "Thanks for Playing!" << std::endl;
 	}
 	return cont;
+}
+
+bool isInvalidMove(std::string playerMove, std::string config) {
+	bool valid = true;
+	char m = config[0]; // number of heaps as char
+	char player_move_m = playerMove[0];
+	if (isdigit(player_move_m)) {
+		int mint = m - '0'; // number of heaps as int
+		int pmint = player_move_m - '0';
+		// check for non-existent pile
+		if (pmint == 0) valid = false; 
+		else if (pmint > mint) valid = false;
+		// check for wrong format other than "mnn"
+		else if (playerMove.size() != 3) valid = false;
+		else { // check for valid num rocks from pile
+			std::vector<int> heapSizes = convert_from_config(config);
+			int numToRemove = atoi(playerMove.substr(1, 2).c_str());
+			if (numToRemove > heapSizes[pmint - 1]) valid = false;
+			else if (numToRemove == 0) valid = false;
+		}
+	}
+	else valid = false;
+	return !valid;
 }
