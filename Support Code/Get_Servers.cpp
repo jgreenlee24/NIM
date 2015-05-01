@@ -14,13 +14,16 @@
 //	char *broadcastPort		= The port that should be used for the broadcast
 
 //	OUT parameters:
+//help
+
+
 //	ServerStruct server[]	= An array that contains the structs.  The members of each struct
 //							  contain the name, IP Address and port number of remote server.
 //	numServers				= Number of elements in the server[] array
 
 //	Function return value	= Number of remote servers (size of server[] array)
 
-void getServers(SOCKET s, char *broadcastAddress, char *broadcastPort, ServerStruct server[], int &numServers)
+void getServers(SOCKET s, char *broadcastAddress, char *broadcastPort, ServerStruct server[MAX_HOST], int &numServers)
 {
 	std::string host;
 	std::string port;
@@ -40,13 +43,11 @@ void getServers(SOCKET s, char *broadcastAddress, char *broadcastPort, ServerStr
 	if (status > 0) {
 		int len = UDP_recv(s, buf, MAX_RECV_BUF, (char*)host.c_str(), (char*)port.c_str());
 		while (status > 0 && len > 0) {
-			char *startOfName = strstr(buf,"Name =");
-			if (startOfName != NULL) {
-				server[numServers].name = startOfName+strlen("Name =");
+				server[numServers].name = buf;
 				server[numServers].host = host.c_str() ;
 				server[numServers].port = port.c_str();
 				numServers++;
-			}
+			
 			status = wait(s,2,0);
 			if (status > 0)
 				len = UDP_recv(s, buf, MAX_RECV_BUF, (char*)host.c_str(), (char*)port.c_str());

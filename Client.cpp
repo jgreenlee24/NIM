@@ -9,7 +9,7 @@ void client_main(int argc, char *argv[])
 {
 	std::string host;
 	std::string port;
-	ServerStruct* server[MAX_HOST];
+	ServerStruct server[MAX_HOST];
 	std::string playerName;
 
 	SOCKET s = connectsock("","","udp");
@@ -18,7 +18,7 @@ void client_main(int argc, char *argv[])
 	std::getline(std::cin, playerName);
 	std::cout << std::endl << "Looking for NIM servers ... " << std::endl;
 	int numServers = 0;
-	getServers(s, BROADCAST_ADDR, UDPPORT_NIM, server[MAX_HOST], numServers);
+	getServers(s, BROADCAST_ADDR, UDPPORT_NIM, server, numServers);
 
 	if (numServers == 0) 
 	{
@@ -29,14 +29,14 @@ void client_main(int argc, char *argv[])
 		std::cout << std::endl << "Found NIM server";
 		if (numServers == 1) 
 		{
-			std::cout << ":" << "  " << server[0]->name << std::endl;
+			std::cout << ":" << "  " << server[0].name << std::endl;
 		} 
 		else
 		{
 			std::cout << "s:" << std::endl;
 			for (int i=0; i<numServers; i++) 
 			{
-				std::cout << "  " << i+1 << " - " << server[i]->name << std::endl;
+				std::cout << "  " << i+1 << " - " << server[i].name << std::endl;
 			}
 			std::cout << std::endl << "  " << numServers+1 << " - QUIT" << std::endl;
 		}
@@ -46,7 +46,7 @@ void client_main(int argc, char *argv[])
 		std::string answer_str;
 		if (numServers == 1) 
 		{
-			std::cout << "Do you want to challenge " << server[0]->name << "? ";
+			std::cout << "Do you want to challenge " << server[0].name << "? ";
 			std::getline(std::cin, answer_str);
 			if (answer_str[0] == 'y' || answer_str[0] == 'Y')
 			{
@@ -68,9 +68,9 @@ void client_main(int argc, char *argv[])
 		{
 			// Extract the opponent's info from the server[] array
 			std::string serverName;
-			serverName = server[answer-1]->name;		// Adjust for 0-based array
-			host = server[answer-1]->host;
-			port = server[answer-1]->port;
+			serverName = server[answer-1].name;		// Adjust for 0-based array
+			host = server[answer-1].host;
+			port = server[answer-1].port;
 
 			// Append playerName to the TicTacToe_CHALLENGE string & send a challenge to host:port
 			char buf[MAX_SEND_BUF];
@@ -91,6 +91,7 @@ void client_main(int argc, char *argv[])
 					closesocket(s);
 
 					SOCKET s = connectsock((char*)host.c_str(),"29334","tcp");
+					std::cout << "connected" << std::endl;
 					//play_Nim(s, bool, char*);
 
 				}
@@ -108,3 +109,4 @@ void client_main(int argc, char *argv[])
 
 	closesocket(s);
 }
+

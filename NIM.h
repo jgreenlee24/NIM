@@ -15,6 +15,13 @@ const int MAX_SERVICE_SIZE = 80;
 const int MAX_LINE		   = 1024;
 const int MAX_NAME	       = 1024;
 const int MAX_HOST         = 100;
+const int TIMEBUF_SIZE	   = 26;
+
+#define MAXBUF  4096
+#define MAXIPBUF  20
+#define Nim_QUERY "Name?\0"
+#define Nim_CHALLENGE "Play? Name=client_name\0"
+#define Nim_ACK "Great!\0"
 
 struct ServerStruct {
 	std::string name;
@@ -27,10 +34,12 @@ char*  timestamp(void);
 void   server_main(int,char*[]);
 void   client_main(int,char*[]);
 void   play_Nim(SOCKET, bool, char*);
-void   getServers(SOCKET, char*	, char*, ServerStruct*, int&);
+void   getServers(SOCKET, char*	, char*, ServerStruct[], int&);
 int    UDP_recv(SOCKET, char*, int, char*, char*);
 int    UDP_send (SOCKET, char[], int, char[], char[]);
 int    wait(SOCKET, int, int);
+char* GetHostIP();
+
 
 SOCKET passivesock (char*, char*);
 SOCKET connectsock (char*, char*, char*);
